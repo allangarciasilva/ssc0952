@@ -7,7 +7,7 @@ python3 -m pip install grpcio-tools > /dev/null
 echo "Setting up directories"
 PY_OUT_MODULE=$ROOT_PATH/backend/proto
 ESP_OUTPUT_INCLUDE=$ROOT_PATH/embedded/include/proto
-ESP_OUTPUT_SRC=$ROOT_PATH/embedded/src/proto
+ESP_OUTPUT_SRC=$ROOT_PATH/embedded/src/generated
 rm -rf $PY_OUT_MODULE $ESP_OUTPUT_INCLUDE $ESP_OUTPUT_SRC
 mkdir -p $PY_OUT_MODULE $ESP_OUTPUT_INCLUDE $ESP_OUTPUT_SRC
 
