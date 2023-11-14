@@ -1,0 +1,5 @@
+proto/
+__pycache__/
+password_file
+.env
+mosquitto/
