@@ -1,5 +1,6 @@
 proto/
 __pycache__/
 .env
-mosquitto/data/
-mosquitto/password_file/
+mosquitto/
+mosquitto/
+postgres/

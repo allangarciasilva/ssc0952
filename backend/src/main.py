@@ -14,12 +14,11 @@ def on_message(client, userdata, message):
 
 
 def main():
-    client = mqtt.Client("mqtt-subscriber")
+    client = mqtt.Client("main")
     client.on_message = on_message
 
     client.username_pw_set(SETTINGS.mosquitto_user, SETTINGS.mosquitto_password)
-    print(SETTINGS.mosquitto_host, 1883, 60)
-    client.connect(SETTINGS.mosquitto_host, 1883, 60)
+    client.connect(SETTINGS.mosquitto_host, SETTINGS.mosquitto_port, 60)
     client.subscribe(SETTINGS.mosquitto_topic)
 
     print("Started listening")

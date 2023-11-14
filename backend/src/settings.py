@@ -2,9 +2,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra='ignore')
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     mosquitto_host: str = "broker"
+    mosquitto_port: int = 1883
     mosquitto_user: str
     mosquitto_password: str
     mosquitto_topic: str
@@ -22,5 +23,12 @@ class Settings(BaseSettings):
         database_name = self.postgres_db
         return f"postgresql+psycopg2://{username}:{password}@{host}/{database_name}"
 
+    @classmethod
+    def create(cls):
+        settings = Settings()
+        if settings.mosquitto_host == "broker":
+            settings.mosquitto_port = 1883
+        return settings
 
-SETTINGS = Settings()
+
+SETTINGS = Settings.create()

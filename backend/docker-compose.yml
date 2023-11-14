@@ -5,13 +5,15 @@ services:
     build: .
     env_file:
       - .env
-    command: python -m src.main
+    depends_on:
+      - database
+      - broker
   database:
     image: postgres
     env_file:
       - .env
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data
   broker:
     image: eclipse-mosquitto
     env_file:
@@ -19,8 +21,6 @@ services:
     ports:
       - ${MOSQUITTO_PORT}:1883
     volumes:
-      - ./mosquitto/config/:/mosquitto/config/
+      - ./mosquitto.conf/:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/config:/mosquitto/config
       - ./mosquitto/data:/mosquitto/data
-
-volumes:
-  postgres-data:
