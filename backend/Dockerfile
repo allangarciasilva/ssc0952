@@ -12,7 +12,7 @@ RUN poetry install
 
 # Compiling protobuf files
 COPY ./proto ./proto
-RUN poetry run python -m grpc.tools.protoc -I. ./proto/*.proto --python_out=. --pyi_out=.
+RUN poetry run python -m grpc.tools.protoc -I. ./proto/*.proto --python_out=.
 
 # Setting up execution files
 COPY ./src ./src

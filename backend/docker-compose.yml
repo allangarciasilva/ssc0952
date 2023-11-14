@@ -23,4 +23,5 @@ services:
     volumes:
       - ./mosquitto.conf/:/mosquitto/config/mosquitto.conf
       - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/certs:/mosquitto/certs
       - ./mosquitto/data:/mosquitto/data
