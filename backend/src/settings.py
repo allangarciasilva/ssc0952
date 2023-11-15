@@ -2,13 +2,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore")
 
     mosquitto_host: str = "broker"
     mosquitto_port: int = 1883
     mosquitto_user: str
     mosquitto_password: str
-    mosquitto_topic: str
 
     postgres_host: str = "database"
     postgres_user: str

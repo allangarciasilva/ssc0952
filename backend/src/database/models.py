@@ -1,14 +1,10 @@
+from datetime import datetime
 from typing import List
-from .settings import SETTINGS
 
-from sqlalchemy import ForeignKey, create_engine
-from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship, sessionmaker
+from sqlalchemy import ForeignKey, Index, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-engine = create_engine(SETTINGS.sqlalchemy_url, echo=True)
-SessionLocal = sessionmaker(engine)
-
-Base = declarative_base()
+from src.database.database import Base
 
 
 class User(Base):
@@ -45,6 +41,7 @@ class NoiseMeasurement(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     noise_value: Mapped[float]
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     room_id: Mapped[int] = mapped_column(ForeignKey("Room.id"))
     device_id: Mapped[int] = mapped_column(ForeignKey("IoTDevice.id"))
@@ -53,5 +50,4 @@ class NoiseMeasurement(Base):
     device: Mapped["IoTDevice"] = relationship(back_populates="measurements")
 
 
-# Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+Index(None, NoiseMeasurement.room_id, NoiseMeasurement.created_at)

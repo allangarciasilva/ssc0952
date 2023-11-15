@@ -9,11 +9,13 @@ services:
         - MOSQUITTO_URL=$MOSQUITTO_HOST:$MOSQUITTO_PORT
     env_file:
       - .env
-    depends_on:
-      - database
-      - broker
+    volumes:
+      - ./src:/app/src
+    command: sh python_run.sh
   database:
     image: postgres
+    ports:
+      - ${POSTGRES_PORT}:5432
     env_file:
       - .env
     volumes:
