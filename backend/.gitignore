@@ -7,3 +7,4 @@ postgres/
 .idea/
 .vscode/
 openssl.cnf
+data/

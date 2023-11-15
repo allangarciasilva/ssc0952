@@ -3,7 +3,7 @@
 mkdir -p data
 
 openssl s_client \
-    -connect andromeda.lasdpc.icmc.usp.br:7045 \
+    -connect "143.107.232.252:7045" \
     -showcerts </dev/null | openssl x509 -outform PEM > data/certificate.pem
 
 CERTIFICATE=$(cat ./data/certificate.pem)

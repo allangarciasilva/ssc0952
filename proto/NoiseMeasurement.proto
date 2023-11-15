@@ -3,5 +3,5 @@ syntax = "proto3";
 message NoiseMeasurement {
   uint32 room_id = 1;
   uint32 device_id = 2;
-  int32 noise_value = 3;
+  float noise_value = 3;
 }
