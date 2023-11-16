@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'login_screen.dart';
+import 'menu.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -26,29 +27,11 @@ class Pair<T, U> {
 }
 
 class _AppState extends State<App> {
-  late final WebSocketChannel channel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:12347/ws/1'));
-
   List<double> messages = List<double>.generate(10, (index) => 0);
 
   @override
   void initState() {
     super.initState();
-
-    channel.stream.listen(
-      (message) {
-        Map<String, dynamic> data = jsonDecode(message);
-        print(message);
-
-        setState(() {
-          if (messages.length >= 10) {
-            messages = messages.sublist(1);
-          }
-          messages.add(data["message"]);
-        });
-      },
-      onError: (error) => print(error),
-    );
   }
 
   static double maxV = 10;
@@ -75,38 +58,16 @@ class _AppState extends State<App> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('WebSocket Example'),
+          title: Text('Monitoramento de Ruído e Ocupação de Salas'),
+          backgroundColor: Colors.pink,
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // for (var message in messages) Text(message.toString()),
-              // SizedBox(height: 16.0),
-              SfCartesianChart(
-                // animationDuration: Duration.zero,
-                primaryXAxis:
-                    CategoryAxis(visibleMinimum: 0, visibleMaximum: 9),
-                primaryYAxis: NumericAxis(minimum: 0, maximum: maxV),
-                series: [
-                  LineSeries<Pair<int, double>, int>(
-                    dataSource: _getData(),
-                    xValueMapper: (data, _) => data.first,
-                    yValueMapper: (data, _) => data.second,
-                    animationDuration: 0,
-                  )
-                ],
-              ),
-            ],
-          ),
-        ),
+        body: MenuScreen(),
       ),
     );
   }
 
   @override
   void dispose() {
-    channel.sink.close();
     super.dispose();
   }
 }
