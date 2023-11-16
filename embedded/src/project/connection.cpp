@@ -4,9 +4,11 @@
 
 #include <project/config.h>
 
+bool isWifiConnected() { return WiFi.status() == WL_CONNECTED; }
+
 boolean tryToConnectToWifi(const char *ssid, const char *password) {
     for (int i = 0; i < 10; i++) {
-        if (WiFi.status() == WL_CONNECTED) {
+        if (isWifiConnected()) {
             return true;
         }
         Serial.print(".");
@@ -15,7 +17,7 @@ boolean tryToConnectToWifi(const char *ssid, const char *password) {
     return false;
 }
 
-void connectToWifi(WiFiClientSecure &client, const char *ssid,
+bool connectToWifi(WiFiClientSecure &client, const char *ssid,
                    const char *password) {
     while (true) {
         Serial.print("[WiFi] Trying to connect to ");
@@ -40,21 +42,24 @@ void connectToWifi(WiFiClientSecure &client, const char *ssid,
     Serial.println('.');
 
     Serial.println("[WiFi] Setting up CA certificate.");
-    client.setCACert(CA_CERTIFICATE);
+    client.setCACert(Config::CA_CERTIFICATE);
     Serial.println("[WiFi] CA certificate set.");
+
+    return true;
 }
 
 void connectToBroker(PubSubClient &client) {
-    client.setServer(MOSQUITTO_HOST, MOSQUITTO_PORT);
+    client.setServer(Config::MOSQUITTO_HOST, Config::MOSQUITTO_PORT);
 
-    auto id = "ESP32 " + WiFi.macAddress();
+    auto id = Config::ESP_UNIQUE_ID;
 
     while (true) {
         Serial.print("[MQTT] Trying to connect as ");
         Serial.print(id);
         Serial.println('.');
 
-        if (client.connect(id.c_str(), MOSQUITTO_USER, MOSQUITTO_PASSWORD)) {
+        if (client.connect(id, Config::MOSQUITTO_USER,
+                           Config::MOSQUITTO_PASSWORD)) {
             break;
         }
 

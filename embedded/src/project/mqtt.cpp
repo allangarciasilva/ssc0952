@@ -3,10 +3,10 @@
 #include <proto/NoiseMeasurement.pb.h>
 
 bool publishMqttMessage(PubSubClient &client, const char *topic,
-                        boolean restrained, void *message, size_t buffer_size,
+                        boolean restrained, void *message, size_t bufferSize,
                         const pb_msgdesc_t *fields) {
-    uint8_t buffer[buffer_size];
-    pb_ostream_t stream = pb_ostream_from_buffer(buffer, buffer_size);
+    uint8_t buffer[bufferSize];
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, bufferSize);
 
     if (!pb_encode(&stream, fields, message)) {
         return false;

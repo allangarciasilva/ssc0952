@@ -7,10 +7,14 @@ services:
       dockerfile: Dockerfile
       args:
         - MOSQUITTO_URL=$MOSQUITTO_HOST:$MOSQUITTO_PORT
+    ports:
+      - ${API_PORT}:8000
     env_file:
       - .env
     volumes:
       - ./src:/app/src
+    depends_on:
+      - database
     command: sh python_run.sh
   database:
     image: postgres

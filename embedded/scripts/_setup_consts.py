@@ -1,4 +1,5 @@
 import os
+from uuid import uuid4
 import subprocess
 from json import dumps
 
@@ -45,6 +46,8 @@ CA_CERTIFICATE = get_ca_certificate(MOSQUITTO_HOST, MOSQUITTO_PORT)
 cpp_contents = f"""\
 #include <project/config.h>
 
+namespace Config {{
+
 const char *CA_CERTIFICATE = {dumps(CA_CERTIFICATE)};
 
 const char *ESP_WIFI_SSID = {dumps(ESP_WIFI_SSID)};
@@ -54,6 +57,8 @@ const char *MOSQUITTO_USER = {dumps(MOSQUITTO_USER)};
 const char *MOSQUITTO_PASSWORD = {dumps(MOSQUITTO_PASSWORD)};
 IPAddress MOSQUITTO_HOST = {host_to_ip(MOSQUITTO_HOST)};
 int MOSQUITTO_PORT = {MOSQUITTO_PORT};
+
+}}
 """
 
 with open("./src/generated/config.cpp", "w") as f:

@@ -1,26 +1,33 @@
+import asyncio
+import logging
 import traceback
 from contextlib import asynccontextmanager
 from datetime import datetime
 
 import paho.mqtt.client as mqtt
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
+from starlette.websockets import WebSocketDisconnect
 
 from proto.NoiseMeasurement_pb2 import NoiseMeasurement
+from src.connection import ConnectionManager
 from src.database import SessionLocal, models
 from src.settings import SETTINGS
 
-app = FastAPI()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 mqtt_client = mqtt.Client()
+manager = ConnectionManager()
 
 
 def on_connect(client, userdata, flags, rc):
-    print(f"Connected to Mosquitto with result code {rc}.")
+    logger.info(f"Connected to Mosquitto with result code {rc}.")
     client.subscribe("default-topic")
 
 
 def on_message(client, userdata, msg: mqtt.MQTTMessage):
     received_at = datetime.utcnow()
-    print(f"Received message on topic {repr(msg.topic)} at UTC {received_at}.")
+    logger.info(f"Received message on topic {repr(msg.topic)} at UTC {received_at}.")
 
     message = NoiseMeasurement()
     message.ParseFromString(msg.payload)
@@ -33,12 +40,14 @@ def on_message(client, userdata, msg: mqtt.MQTTMessage):
                 device_id=message.device_id,
             )
             session.add(db_measurement)
-            session.commit()
+            # session.commit()
     except Exception:
-        print("Error adding to database")
+        logger.info("Error adding to database")
         traceback.print_exc()
     else:
-        print("Added to database")
+        logger.info("Added to database")
+
+    asyncio.run(manager.broadcast(message.room_id, message.noise_value))
 
 
 @asynccontextmanager
@@ -60,7 +69,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
+@app.websocket("/ws/{room_id}")
+async def websocket_endpoint(websocket: WebSocket, room_id: int):
+    await manager.connect(room_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(room_id, websocket)
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
