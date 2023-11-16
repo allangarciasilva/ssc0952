@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message ESPConfig {
+  string wifiSsid = 1;
+  string wifiPassword = 2;
+}

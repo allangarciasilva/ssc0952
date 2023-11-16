@@ -64,6 +64,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
+    mqtt_client.loop_stop()
     mqtt_client.disconnect()
 
 

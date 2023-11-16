@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
@@ -27,8 +26,8 @@ class Pair<T, U> {
 }
 
 class _AppState extends State<App> {
-  final WebSocketChannel channel =
-      IOWebSocketChannel.connect('ws://192.168.15.25:12347/ws/1');
+  late final WebSocketChannel channel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:12347/ws/1'));
 
   List<double> messages = List<double>.generate(10, (index) => 0);
 
