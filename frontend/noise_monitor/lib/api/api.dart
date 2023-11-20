@@ -34,7 +34,7 @@ class ApiError implements Error {
   StackTrace? get stackTrace => StackTrace.current;
 }
 
-const String _apiHost = "eac1-2001-12d0-2080-2800-172-26-fffc-221f.ngrok.io";
+const String _apiHost = "143.107.232.252";
 const int _apiPort = 8045;
 User? _currentUser;
 
