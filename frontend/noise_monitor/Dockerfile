@@ -43,13 +43,13 @@ RUN flutter pub get; exit 0
 RUN dart pub global activate protoc_plugin
 ENV PATH "$PATH":"/home/developer/.pub-cache/bin"
 
-# Compiling protobuf files
-COPY --chown=developer ./proto ./proto
-RUN protoc proto/*.proto -I . --dart_out=.
-
 # Dart code generation
 COPY --chown=developer ./lib ./lib
 COPY --chown=developer ./android ./android
 RUN dart run build_runner build --delete-conflicting-outputs
+
+# Compiling protobuf files
+COPY --chown=developer ./proto ./proto
+RUN protoc proto/*.proto -I. --dart_out=./lib
 
 RUN flutter build apk --release
