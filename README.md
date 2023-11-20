@@ -71,3 +71,8 @@ O restante pode manter conforme preenchido.
 Certifique-se que esse arquivo de configuração está igual em ambas as máquinas, no servidor e na máquina em que serão configurados a ESP e o smartphone.
 
 O restante das informações está dividido entre os arquivos:
+1. Para o backend e o broker: `./backend/README.md`
+2. Para o programa da ESP: `./embedded/README.md`
+3. Para o cliente Android: `./frontend/noise_monitor/README.md`
+
+Os caminhos de arquivos referenciados por esses READMEs assumem que estão relativos à pasta do README em questão.

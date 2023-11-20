@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:noise_monitor/models/device.dart';
 import 'package:noise_monitor/models/user.dart';
+import 'package:noise_monitor/gen/api_host.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -33,8 +34,6 @@ class ApiError implements Error {
   StackTrace? get stackTrace => StackTrace.current;
 }
 
-const String _apiHost = "143.107.232.252";
-const int _apiPort = 8045;
 User? _currentUser;
 
 bool _responseOk(http.Response response) {
@@ -42,21 +41,21 @@ bool _responseOk(http.Response response) {
 }
 
 Uri _renderHttpUri(String route, {Map<String, String>? query}) {
-  if (_apiHost.contains("ngrok.io")) {
-    return Uri.https(_apiHost, route, query);
+  if (API_HOST.contains("ngrok.io")) {
+    return Uri.https(API_HOST, route, query);
   }
-  return Uri.http("$_apiHost:$_apiPort", route, query);
+  return Uri.http("$API_HOST:$API_PORT", route, query);
 }
 
 Uri _renderWsUrl(String route, {Map<String, String>? query}) {
   int? port = null;
-  if (!_apiHost.contains("ngrok.io")) {
-    port = _apiPort;
+  if (!API_HOST.contains("ngrok.io")) {
+    port = API_PORT;
   }
 
   return Uri(
     scheme: "ws",
-    host: _apiHost,
+    host: API_HOST,
     port: port,
     path: route,
     queryParameters: query,

@@ -8,8 +8,7 @@ Compilar e abrir o terminal, faça:
 
 ```shell
 # Copia os arquivos do Protobuf para a pasta atual
-mkdir -p ./proto
-cp -u ../proto/*.proto ./proto
+sh ./scripts/setup.sh
 
 # Constrói a imagem e abre um terminal dentro do container
 docker compose build flutter
