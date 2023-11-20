@@ -53,6 +53,9 @@ const char *CA_CERTIFICATE = {dumps(CA_CERTIFICATE)};
 const char *ESP_WIFI_SSID = {dumps(ESP_WIFI_SSID)};
 const char *ESP_WIFI_PASSWORD = {dumps(ESP_WIFI_PASSWORD)};
 
+const char *BLE_SERVICE_UUID = {dumps(str(uuid4()))};
+const char *BLE_CHARACTERISTIC_UUID = {dumps(str(uuid4()))};
+
 const char *MOSQUITTO_USER = {dumps(MOSQUITTO_USER)};
 const char *MOSQUITTO_PASSWORD = {dumps(MOSQUITTO_PASSWORD)};
 IPAddress MOSQUITTO_HOST = {host_to_ip(MOSQUITTO_HOST)};

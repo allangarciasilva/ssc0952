@@ -1,6 +1,7 @@
 #include <project/message_consts.h>
 
 #include <proto/NoiseMeasurement.pb.h>
+#include <proto/ESPSetup.pb.h>
 
 #define DEFINE_MESSAGE_CONSTS(MessageType)                                     \
     template <>                                                                \
@@ -11,3 +12,4 @@
         MessageType##_fields;
 
 DEFINE_MESSAGE_CONSTS(NoiseMeasurement);
+DEFINE_MESSAGE_CONSTS(ESPSetup);

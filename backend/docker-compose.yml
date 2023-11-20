@@ -13,6 +13,7 @@ services:
       - .env
     volumes:
       - ./src:/app/src
+      - ./log:/app/log
     depends_on:
       - database
     command: sh python_run.sh

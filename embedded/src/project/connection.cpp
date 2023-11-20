@@ -3,6 +3,8 @@
 #include <Arduino.h>
 
 #include <project/config.h>
+#include <project/mqtt.h>
+#include <proto/ESPSetup.pb.h>
 
 bool isWifiConnected() { return WiFi.status() == WL_CONNECTED; }
 
@@ -17,12 +19,9 @@ boolean tryToConnectToWifi(const char *ssid, const char *password) {
     return false;
 }
 
-bool connectToWifi(WiFiClientSecure &client, const char *ssid,
-                   const char *password) {
+bool connectToWifi(WiFiClientSecure &client, const char *ssid, const char *password) {
     while (true) {
-        Serial.print("[WiFi] Trying to connect to ");
-        Serial.print(ssid);
-        Serial.print('.');
+        Serial.printf("[WiFi] Trying to connect to %s.", ssid);
 
         WiFi.mode(WIFI_STA); // Optional
         WiFi.begin(ssid, password);
@@ -31,47 +30,37 @@ bool connectToWifi(WiFiClientSecure &client, const char *ssid,
             break;
         }
 
-        Serial.print("\n[WiFi] Error while connecting to ");
-        Serial.print(ssid);
-        Serial.println(". Trying again in 5 seconds.");
+        Serial.printf("\n[WiFi] Error while connecting to %s. Trying again in 5 seconds.\n", ssid);
         delay(5000);
     }
 
-    Serial.print("\n[WiFi] Connected to ");
-    Serial.print(ssid);
-    Serial.println('.');
-
-    Serial.println("[WiFi] Setting up CA certificate.");
     client.setCACert(Config::CA_CERTIFICATE);
-    Serial.println("[WiFi] CA certificate set.");
-
+    Serial.printf("\n[WiFi] Connected to %s.\n", ssid);
     return true;
 }
 
-void connectToBroker(PubSubClient &client) {
+void connectToBroker(PubSubClient &client, uint32_t room_id) {
     client.setServer(Config::MOSQUITTO_HOST, Config::MOSQUITTO_PORT);
 
     auto id = Config::ESP_UNIQUE_ID;
 
     while (true) {
-        Serial.print("[MQTT] Trying to connect as ");
-        Serial.print(id);
-        Serial.println('.');
+        Serial.printf("[MQTT] Trying to connect as %s.\n", id);
 
-        if (client.connect(id, Config::MOSQUITTO_USER,
-                           Config::MOSQUITTO_PASSWORD)) {
+        if (client.connect(id, Config::MOSQUITTO_USER, Config::MOSQUITTO_PASSWORD, MQTT_SHUTDOWN_TOPIC, 2,
+                           false, Config::ESP_UNIQUE_ID)) {
             break;
         }
 
-        Serial.print("[MQTT] Error while connecting as ");
-        Serial.print(id);
-        Serial.print(". Error code: ");
-        Serial.print(client.state());
-        Serial.println(". Trying again in 5 seconds.");
+        Serial.printf("[MQTT] Error while connecting as %s.", id);
+        Serial.printf("Error code: %d. Trying again in 5 seconds.\n", client.state());
         delay(5000);
     }
 
-    Serial.print("[MQTT] Connected as ");
-    Serial.print(id);
-    Serial.println('.');
+    ESPSetup setupMessage;
+    setupMessage.room_id = room_id;
+    strcpy(setupMessage.device_name, Config::ESP_UNIQUE_ID);
+
+    publishMqttMessage(client, MQTT_STARTUP_TOPIC, setupMessage);
+    Serial.printf("[MQTT] Connected as %s.\n", id);
 }

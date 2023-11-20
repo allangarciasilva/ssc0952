@@ -10,6 +10,9 @@ extern const char *ESP_UNIQUE_ID;
 extern const char *ESP_WIFI_SSID;
 extern const char *ESP_WIFI_PASSWORD;
 
+extern const char *BLE_SERVICE_UUID;
+extern const char *BLE_CHARACTERISTIC_UUID;
+
 extern const char *MOSQUITTO_USER;
 extern const char *MOSQUITTO_PASSWORD;
 extern IPAddress MOSQUITTO_HOST;

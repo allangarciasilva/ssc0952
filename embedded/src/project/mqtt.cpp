@@ -2,9 +2,12 @@
 
 #include <proto/NoiseMeasurement.pb.h>
 
-bool publishMqttMessage(PubSubClient &client, const char *topic,
-                        boolean restrained, void *message, size_t bufferSize,
-                        const pb_msgdesc_t *fields) {
+const char *MQTT_STARTUP_TOPIC = "setup";
+const char *MQTT_SHUTDOWN_TOPIC = "shutdown";
+const char *MQTT_MEASUREMENT_TOPIC = "noise";
+
+bool publishMqttMessage(PubSubClient &client, const char *topic, boolean restrained, void *message,
+                        size_t bufferSize, const pb_msgdesc_t *fields) {
     uint8_t buffer[bufferSize];
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, bufferSize);
 

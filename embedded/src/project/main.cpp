@@ -1,7 +1,9 @@
+#include "project/ble.h"
 #include <Arduino.h>
 #include <PubSubClient.h>
 #include <WiFiClientSecure.h>
 #include <project/config.h>
+#include <project/config_manager.h>
 #include <project/connection.h>
 #include <project/mqtt.h>
 #include <proto/NoiseMeasurement.pb.h>
@@ -27,48 +29,40 @@ float get_noise_voltage() {
 WiFiClientSecure wifiClient;
 PubSubClient client(wifiClient);
 
+NoiseMeasurement message = {"", 0};
+
 void setup() {
     Serial.begin(115200);
+
+    setupBLE();
     pinMode(soundPin, INPUT);
 
-    if (SIMULATION) {
-        connectToWifi(wifiClient, "Wokwi-GUEST", "");
-    } else {
-        connectToWifi(wifiClient, Config::ESP_WIFI_SSID,
-                      Config::ESP_WIFI_PASSWORD);
-    }
-
-    connectToBroker(client);
-
-    Serial.println("Sending setup");
-    client.publish("setup", "SETUP WENT OK");
+    strcpy(message.device_name, Config::ESP_UNIQUE_ID);
 }
 
 void loop() {
-    if (!client.connected()) {
-        connectToBroker(client);
+    if (!ConfigManager::instance.setupConnections(client, wifiClient)) {
+        delay(500);
         return;
     }
     client.loop();
-
-    NoiseMeasurement message = {0, 0, 0};
-    message.room_id = 1;
-    message.device_id = 1;
 
     float calculated_value = 0;
 
     int n = 10;
     for (int i = 0; i < n; i++) {
         calculated_value += get_noise_voltage();
-        delay(50 / n);
+        delay(150 / n);
     }
 
     calculated_value /= n;
-    message.noise_value = calculated_value * calculated_value;
+    message.noise_value = calculated_value;
 
-    if (publishMqttMessage(client, "default-topic", message)) {
+    if (publishMqttMessage(client, MQTT_MEASUREMENT_TOPIC, message)) {
         Serial.println(message.noise_value);
     } else {
         Serial.println("Error while sending message.");
     }
+
+    // delay(150);
 }

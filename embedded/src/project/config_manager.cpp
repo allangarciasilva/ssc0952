@@ -20,17 +20,26 @@ void ConfigManager::setData(uint8_t *buffer, size_t bufferSize) {
     up_to_date = false;
 
     Serial.println("Configuration set!");
+    Serial.printf("SSID: %s\nPassword: %s\nRoom Id: %u\n", data.wifiSsid, data.wifiPassword, data.roomId);
 }
 
-bool ConfigManager::connectToWifi(WiFiClientSecure &client) {
+bool ConfigManager::setupConnections(PubSubClient &client, WiFiClientSecure &wifiClient) {
     if (!first_set) {
         Serial.println("Missing configuration.");
         return false;
     }
 
-    if (up_to_date && isWifiConnected()) {
+    if (up_to_date) {
         return true;
     }
 
-    return ::connectToWifi(client, data.wifiSsid, data.wifiPassword);
+    if (client.connected()) {
+        client.disconnect();
+    }
+
+    connectToWifi(wifiClient, data.wifiSsid, data.wifiPassword);
+    connectToBroker(client, data.roomId);
+
+    up_to_date = true;
+    return true;
 }

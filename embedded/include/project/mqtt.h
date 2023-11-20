@@ -7,13 +7,16 @@
 
 #include <project/message_consts.h>
 
-bool publishMqttMessage(PubSubClient &client, const char *topic,
-                        boolean restrained, void *message, size_t bufferSize,
-                        const pb_msgdesc_t *fields);
+extern const char *MQTT_STARTUP_TOPIC;
+extern const char *MQTT_SHUTDOWN_TOPIC;
+extern const char *MQTT_MEASUREMENT_TOPIC;
+
+bool publishMqttMessage(PubSubClient &client, const char *topic, boolean restrained, void *message,
+                        size_t bufferSize, const pb_msgdesc_t *fields);
 
 template <typename T>
-inline bool publishMqttMessage(PubSubClient &client, const char *topic,
-                               const T &message, boolean restrained = false) {
-    return publishMqttMessage(client, topic, restrained, (void *)&message,
-                              MessageConsts<T>::SIZE, MessageConsts<T>::FIELDS);
+inline bool publishMqttMessage(PubSubClient &client, const char *topic, const T &message,
+                               boolean restrained = false) {
+    return publishMqttMessage(client, topic, restrained, (void *)&message, MessageConsts<T>::SIZE,
+                              MessageConsts<T>::FIELDS);
 }

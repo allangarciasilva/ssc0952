@@ -12,6 +12,7 @@ rm -rf $ESP_OUTPUT_INCLUDE $ESP_OUTPUT_SRC
 mkdir -p $ESP_OUTPUT_INCLUDE $ESP_OUTPUT_SRC
 
 echo "Building Protobuf"
+cd $ROOT_PATH
 python3 -m pip install grpcio-tools nanopb > /dev/null
 python3 -m grpc.tools.protoc $PROTO_FILES -I $ROOT_PATH --nanopb_out=$ESP_OUTPUT_INCLUDE/.. 2> /dev/null
 mv $ESP_OUTPUT_INCLUDE/*.c $ESP_OUTPUT_SRC
