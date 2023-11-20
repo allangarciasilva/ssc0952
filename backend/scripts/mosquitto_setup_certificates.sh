@@ -1,3 +1,5 @@
+#!/bin/bash
+
 PASSWORD_FILE=./mosquitto/config/password_file
 if [ -d "$PASSWORD_FILE" ] ; then
     rm -rf $PASSWORD_FILE
@@ -13,7 +15,7 @@ if [ ! -d "$CERT_PATH" ] ; then
 fi
 mkdir -p $CERT_PATH
 
-OPENSSL_CONFIG_FILE=../openssl.cnf
+OPENSSL_CONFIG_FILE=./openssl.cnf
 
 openssl genrsa -des3 -out $CERT_PATH/ca.key 2048
 openssl req -new -x509 -days 1826 -key $CERT_PATH/ca.key -out $CERT_PATH/ca.crt -config $OPENSSL_CONFIG_FILE

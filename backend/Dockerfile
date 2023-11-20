@@ -21,7 +21,3 @@ RUN openssl s_client \
 # Compiling protobuf files
 COPY ./proto ./proto
 RUN poetry run python -m grpc.tools.protoc -I. ./proto/*.proto --python_out=.
-
-# Setting up execution files
-COPY ./scripts/python_run.sh ./python_run.sh
-COPY ./src ./src

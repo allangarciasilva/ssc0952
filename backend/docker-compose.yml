@@ -16,7 +16,7 @@ services:
       - ./log:/app/log
     depends_on:
       - database
-    command: sh python_run.sh
+    command: poetry run python -m src.main
   database:
     image: postgres
     ports:

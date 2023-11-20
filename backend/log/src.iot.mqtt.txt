@@ -1438,3 +1438,9 @@ noise_value: 10.1050825
 Connected to Mosquitto with result code 0.
 The device ESP32:0000.C8F0.9E9B.DE50 is now active at room 2.
 Connected to Mosquitto with result code 0.
+The device ESP32:0000.C8F0.9E9B.DE50 is now inactive.
+Connected to Mosquitto with result code 0.
+Connected to Mosquitto with result code 0.
+Connected to Mosquitto with result code 0.
+Connected to Mosquitto with result code 0.
+Connected to Mosquitto with result code 0.

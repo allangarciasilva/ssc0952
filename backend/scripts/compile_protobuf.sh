@@ -1,4 +1,4 @@
-#!/bin/bash
+docker compose run --rm -it flutter bash#!/bin/bash
 
 SCRIPT_PATH=$(dirname $(realpath "$0"))
 BACKEND_PATH=$(realpath $SCRIPT_PATH/..)

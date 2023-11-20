@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:noise_monitor/models/device.dart';
-import 'package:noise_monitor/models/room.dart';
 import 'package:noise_monitor/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';

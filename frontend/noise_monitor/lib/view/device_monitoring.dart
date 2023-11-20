@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:noise_monitor/models/device.dart';
 import 'package:noise_monitor/utils/scaffold.dart';
@@ -46,6 +44,7 @@ class _DeviceMonitoringViewState extends State<DeviceMonitoringView> {
       }
     });
   }
+
 
   @override
   void initState() {

@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  flutter:
+  platformio:
     build: .
     volumes:
       - /dev:/dev
