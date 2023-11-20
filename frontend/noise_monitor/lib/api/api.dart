@@ -34,13 +34,34 @@ class ApiError implements Error {
   StackTrace? get stackTrace => StackTrace.current;
 }
 
-const String _apiHost = "e3c7-2001-12d0-2080-2800-172-26-fffc-221f.ngrok.io";
-const int _apiPort = 443;
-const String _apiAuthority = "$_apiHost:$_apiPort";
+const String _apiHost = "eac1-2001-12d0-2080-2800-172-26-fffc-221f.ngrok.io";
+const int _apiPort = 8045;
 User? _currentUser;
 
 bool _responseOk(http.Response response) {
   return response.statusCode / 100 == 2;
+}
+
+Uri _renderHttpUri(String route, {Map<String, String>? query}) {
+  if (_apiHost.contains("ngrok.io")) {
+    return Uri.https(_apiHost, route, query);
+  }
+  return Uri.http("$_apiHost:$_apiPort", route, query);
+}
+
+Uri _renderWsUrl(String route, {Map<String, String>? query}) {
+  int? port = null;
+  if (!_apiHost.contains("ngrok.io")) {
+    port = _apiPort;
+  }
+
+  return Uri(
+    scheme: "ws",
+    host: _apiHost,
+    port: port,
+    path: route,
+    queryParameters: query,
+  );
 }
 
 Map<String, String> _getHeaders() {
@@ -61,7 +82,7 @@ dynamic _getVerifiedBody(http.Response response) {
 
 Future<dynamic> get(String route, {Map<String, String>? query}) async {
   final response = await http.get(
-    Uri.https(_apiAuthority, route, query),
+    _renderHttpUri(route, query: query),
     headers: _getHeaders(),
   );
 
@@ -70,7 +91,7 @@ Future<dynamic> get(String route, {Map<String, String>? query}) async {
 
 Future<dynamic> delete(String route, {Map<String, String>? query}) async {
   final response = await http.delete(
-    Uri.https(_apiAuthority, route, query),
+    _renderHttpUri(route, query: query),
     headers: _getHeaders(),
   );
 
@@ -83,7 +104,7 @@ Future<dynamic> post(
   String? body,
 }) async {
   final response = await http.post(
-    Uri.https(_apiAuthority, route, query),
+    _renderHttpUri(route, query: query),
     headers: _getHeaders(),
     body: body,
   );
@@ -113,23 +134,13 @@ Future<List<Device>> getRoomDevices(int roomId) async {
 
 WebSocketChannel connectToWebsocket(
   String route, {
-  Map<String, dynamic>? query,
+  Map<String, String>? query,
 }) {
-  if (query == null) {
-    query = {};
+  if (_currentUser != null) {
+    query = query ?? {};
+    query["token"] = _currentUser!.token;
   }
-
-  query["token"] = _currentUser?.token;
-  int? port = _apiPort == 443 ? null : _apiPort;
-
-  final uri = Uri(
-    scheme: "ws",
-    host: _apiHost,
-    port: port,
-    path: route,
-    queryParameters: query,
-  );
-
+  final uri = _renderWsUrl(route, query: query);
   print(uri);
   return WebSocketChannel.connect(uri);
 }

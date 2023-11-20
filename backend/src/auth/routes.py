@@ -4,7 +4,7 @@ from src.auth import crud, schemas
 from src.auth.crud import LoggedUser
 from src.database.database import DatabaseSession
 
-auth_router = APIRouter(prefix="/auth")
+auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @auth_router.post("/signup/")

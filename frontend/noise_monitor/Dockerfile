@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 # Prerequisites
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget protobuf-compiler
+        curl git unzip xz-utils zip libglu1-mesa openjdk-17-jdk wget protobuf-compiler usbutils
 
 # Set up new user
 RUN useradd -ms /bin/bash developer

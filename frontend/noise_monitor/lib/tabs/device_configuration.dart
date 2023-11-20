@@ -122,10 +122,6 @@ class _DeviceConfigurationDialogState extends State<DeviceConfigurationDialog> {
   void initState() {
     _ssidController = TextEditingController();
     _passwordController = TextEditingController();
-
-    _ssidController.text = "APARTAMENTO 132 B";
-    _passwordController.text = "Faltava4minutos";
-
     widget.device.connect().then((value) => _loadCharacteristics());
     super.initState();
   }

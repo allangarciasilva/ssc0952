@@ -6,12 +6,14 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 
 from src.settings import SETTINGS
 
+
 engine = create_engine(SETTINGS.sqlalchemy_url, echo=True)
 SessionLocal = sessionmaker(engine)
 
 
 class Base(DeclarativeBase):
     pass
+
 
 def get_db():
     db = SessionLocal()

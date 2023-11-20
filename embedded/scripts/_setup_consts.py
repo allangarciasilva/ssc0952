@@ -38,9 +38,6 @@ MOSQUITTO_PASSWORD = os.environ["MOSQUITTO_PASSWORD"]
 MOSQUITTO_HOST = os.environ["MOSQUITTO_HOST"]
 MOSQUITTO_PORT = os.environ["MOSQUITTO_PORT"]
 
-ESP_WIFI_SSID = os.environ["ESP_WIFI_SSID"]
-ESP_WIFI_PASSWORD = os.environ["ESP_WIFI_PASSWORD"]
-
 CA_CERTIFICATE = get_ca_certificate(MOSQUITTO_HOST, MOSQUITTO_PORT)
 
 cpp_contents = f"""\
@@ -49,9 +46,6 @@ cpp_contents = f"""\
 namespace Config {{
 
 const char *CA_CERTIFICATE = {dumps(CA_CERTIFICATE)};
-
-const char *ESP_WIFI_SSID = {dumps(ESP_WIFI_SSID)};
-const char *ESP_WIFI_PASSWORD = {dumps(ESP_WIFI_PASSWORD)};
 
 const char *BLE_SERVICE_UUID = {dumps(str(uuid4()))};
 const char *BLE_CHARACTERISTIC_UUID = {dumps(str(uuid4()))};

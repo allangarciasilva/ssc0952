@@ -7,9 +7,6 @@ namespace Config {
 extern const char *CA_CERTIFICATE;
 
 extern const char *ESP_UNIQUE_ID;
-extern const char *ESP_WIFI_SSID;
-extern const char *ESP_WIFI_PASSWORD;
-
 extern const char *BLE_SERVICE_UUID;
 extern const char *BLE_CHARACTERISTIC_UUID;
 

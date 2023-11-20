@@ -26,10 +26,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
   void initState() {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-
-    _emailController.text = "allangarcia@usp.br";
-    _passwordController.text = "123";
-
     super.initState();
   }
 

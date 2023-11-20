@@ -10,7 +10,7 @@ from src.database import models
 from src.database.database import DatabaseSession
 from src.iot import schemas, crud
 
-iot_router = APIRouter()
+iot_router = APIRouter(tags=["IoT"])
 
 
 def compare_int(a: int, b: int):

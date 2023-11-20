@@ -1,88 +1,127 @@
 import asyncio
-import json
-import logging
-import traceback
-from datetime import datetime
+from collections import defaultdict
+from typing import Callable
 
 from paho.mqtt import client as mqtt
 
 from proto.ESPSetup_pb2 import ESPSetup
 from proto.NoiseMeasurement_pb2 import NoiseMeasurement
-from src.connection import connection_manager
 from src.database import SessionLocal, models
+from src.message import message_manager
 from src.settings import SETTINGS
-
-MQTT_STARTUP_TOPIC = "setup"
-MQTT_SHUTDOWN_TOPIC = "shutdown"
-MQTT_MEASUREMENT_TOPIC = "noise"
+from src.shared.func import create_file_logger
 
 
-def get_mqtt_logger():
-    logger = logging.getLogger(__name__)
-    fh = logging.FileHandler(f"log/{__name__}.txt")
-    logger.setLevel(logging.INFO)
-    fh.setLevel(logging.INFO)
-    logger.addHandler(fh)
-    return logger
+class DeviceCache(dict):
+    def __init__(self, factory: Callable[[str], models.Device]):
+        super().__init__()
+        self.default_factory = factory
+
+    def __missing__(self, key):
+        if self.default_factory:
+            dict.__setitem__(self, key, self.default_factory(key))
+            return self[key]
 
 
-logger = get_mqtt_logger()
-mqtt_client = mqtt.Client()
+class MQTTHandler:
+    STARTUP_TOPIC = "setup"
+    SHUTDOWN_TOPIC = "shutdown"
+    MEASUREMENT_TOPIC = "noise"
+
+    def __init__(self, user: str, password: str, host: str, port: int):
+        self.client = mqtt.Client()
+        self.logger = create_file_logger(f"log/{__name__}.txt")
+        self.db = SessionLocal()
+        self.device_cache: dict[str, models.Device] = DeviceCache(
+            self.get_or_create_device
+        )
+
+        self.setup(user, password, host, port)
+
+    def setup(self, user: str, password: str, host: str, port: int):
+        self.client.on_connect = self.on_connect
+        self.client.on_message = self.on_message
+        self.client.tls_set("./data/certificate.pem")
+        self.client.tls_insecure_set(True)
+        self.client.username_pw_set(user, password)
+        self.client.connect(host, port, 60)
+
+    def start_loop(self):
+        self.client.loop_start()
+
+    def stop_loop(self):
+        self.client.loop_stop()
+
+    def get_or_create_device(self, device_name: str):
+        db_device = self.db.query(models.Device).filter_by(name=device_name).first()
+        if not db_device:
+            db_device = models.Device(active=True, name=device_name)
+            self.db.add(db_device)
+        return db_device
+
+    def on_connect(self, client, userdata, flags, rc):
+        self.logger.info(f"Connected to Mosquitto with result code {rc}.")
+        self.client.subscribe(self.MEASUREMENT_TOPIC)
+        self.client.subscribe(self.STARTUP_TOPIC)
+        self.client.subscribe(self.SHUTDOWN_TOPIC)
+
+    def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
+        if msg.topic == self.STARTUP_TOPIC:
+            asyncio.run(self.on_device_startup(msg.payload))
+        if msg.topic == self.SHUTDOWN_TOPIC:
+            asyncio.run(self.on_device_shutdown(msg.payload))
+        if msg.topic == self.MEASUREMENT_TOPIC:
+            asyncio.run(self.on_noise_received(msg.payload))
+
+    async def on_noise_received(self, payload: bytes):
+        message = NoiseMeasurement()
+        message.ParseFromString(payload)
+
+        db_device = self.device_cache[message.device_name]
+        db_noise = models.NoiseMeasurement(
+            noise_value=message.noise_value,
+            room_id=db_device.room_id,
+            device_id=db_device.id,
+        )
+        self.db.add(db_noise)
+        self.db.commit()
+
+        await message_manager.publish(
+            f"noise/{message.device_name}", message.noise_value
+        )
+
+    async def on_device_startup(self, payload: bytes):
+        message = ESPSetup()
+        message.ParseFromString(payload)
+
+        db_room = self.db.get(models.Room, message.room_id)
+        if not db_room:
+            return
+
+        db_device = self.get_or_create_device(message.device_name)
+        db_device.room_id = message.room_id
+        db_device.active = True
+        self.db.commit()
+
+        log = f"The device {message.device_name} is now active at room {db_room.name}."
+        self.logger.info(log)
+        await message_manager.publish_to_users(db_device.room_id, log)
+
+    async def on_device_shutdown(self, payload: bytes):
+        device_name = payload.decode()
+
+        db_device = self.get_or_create_device(device_name)
+        db_device.active = False
+        self.db.commit()
+
+        log = f"The device {device_name} is now inactive."
+        self.logger.info(log)
+        await message_manager.publish_to_users(db_device.room_id, log)
 
 
-def on_device_connect(payload: bytes):
-    message = ESPSetup()
-    message.ParseFromString(payload)
-
-    logger.info(f"Device connected: {message.device_name}. Room: {message.room_id}.")
-    asyncio.run(
-        connection_manager.on_device_setup(message.device_name, message.room_id)
-    )
-
-
-def on_device_disconnect(payload: bytes):
-    device_name = payload.decode()
-
-    logger.info(f"Device disconnected: {device_name}.")
-    asyncio.run(connection_manager.on_device_shutdown(device_name))
-
-
-def on_noise_received(payload: bytes):
-    message = NoiseMeasurement()
-    message.ParseFromString(payload)
-
-    # logger.info(f"Received {message.noise_value} from {message.device_name}.")
-    asyncio.run(
-        connection_manager.publish(f"noise/{message.device_name}", message.noise_value)
-    )
-
-
-def on_connect(client, userdata, flags, rc):
-    logger.info(f"Connected to Mosquitto with result code {rc}.")
-    client.subscribe(MQTT_MEASUREMENT_TOPIC)
-    client.subscribe(MQTT_STARTUP_TOPIC)
-    client.subscribe(MQTT_SHUTDOWN_TOPIC)
-
-
-def on_message(client, userdata, msg: mqtt.MQTTMessage):
-    if msg.topic == MQTT_STARTUP_TOPIC:
-        on_device_connect(msg.payload)
-    if msg.topic == MQTT_SHUTDOWN_TOPIC:
-        on_device_disconnect(msg.payload)
-    if msg.topic == MQTT_MEASUREMENT_TOPIC:
-        on_noise_received(msg.payload)
-
-
-def setup_mqtt():
-    mqtt_client.on_connect = on_connect
-    mqtt_client.on_message = on_message
-    mqtt_client.tls_set("./data/certificate.pem")
-    mqtt_client.tls_insecure_set(True)
-    mqtt_client.username_pw_set(SETTINGS.mosquitto_user, SETTINGS.mosquitto_password)
-    mqtt_client.connect(SETTINGS.mosquitto_host, SETTINGS.mosquitto_port, 60)
-    mqtt_client.loop_start()
-
-
-def shutdown_mqtt():
-    mqtt_client.loop_stop()
-    mqtt_client.disconnect()
+mqtt_handler = MQTTHandler(
+    SETTINGS.mosquitto_user,
+    SETTINGS.mosquitto_password,
+    SETTINGS.mosquitto_host,
+    SETTINGS.mosquitto_port,
+)

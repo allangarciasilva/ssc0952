@@ -4,7 +4,8 @@ services:
   flutter:
     build: .
     volumes:
-      - /dev/bus/usb:/dev/bus/usb
+      - /dev:/dev
+      - ./:/app/
     env_file:
       - .env
     privileged: true
