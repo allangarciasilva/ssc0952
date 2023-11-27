@@ -42,6 +42,9 @@ Para executar a aplicação, deve-se construir a imagem e depois subir o contain
 
 ```shell
 docker compose build api
+
+docker compose up database -d
+sleep 3s # Tempo para o server inicializar corretamente
 docker compose up api -d
 ```
 
