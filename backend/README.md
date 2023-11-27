@@ -1,5 +1,13 @@
 # Backend e Broker MQTT
 
+Inicialmente, copie para o contexto atual os arquivos necessários:
+
+```shell
+rm -rf .env proto
+cp ../proto proto -r
+cp ../config.env .env
+```
+
 ## Configuração do TLS/SSL
 
 É necessário configurar alguns dados para a criação do certificado SSL. O arquivo pode ser mantido quase inteiramente inalterado, mas certifique-se que o campo `CN` possui o IP (não pode ser URL por compatibilidade com a ESP) do servidor em que será hospedado. O arquivo `openssl.cnf` é funcional e contém essas configurações, assumindo que o IP é `143.107.232.252`.
@@ -32,11 +40,6 @@ sh ./scripts/mosquitto_add_user.sh
 Para executar a aplicação, deve-se construir a imagem e depois subir o container normalmente:
 
 ```shell
-# Copia os arquivos do Protobuf para a pasta atual
-mkdir -p ./proto
-cp -u ../proto/*.proto ./proto
-
-# Constrói a imagem e sobe o container
 docker compose build api
 docker compose up api -d
 ```

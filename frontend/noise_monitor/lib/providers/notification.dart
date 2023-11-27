@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:noise_monitor/providers/current_user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:noise_monitor/api/api.dart' as api;
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'notification.g.dart';
 

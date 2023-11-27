@@ -58,5 +58,6 @@ int MOSQUITTO_PORT = {MOSQUITTO_PORT};
 }}
 """
 
+os.makedirs("./src/generated/", exist_ok=True)
 with open("./src/generated/config.cpp", "w") as f:
     print(cpp_contents, file=f)

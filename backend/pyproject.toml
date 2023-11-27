@@ -2,7 +2,7 @@
 name = "SSC0952"
 version = "0.1.0"
 description = ""
-authors = ["Allan Garcia"]
+authors = ["Allan Garcia", "Eduarda Neumann", "Bruna Baricatti"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

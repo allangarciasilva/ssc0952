@@ -13,7 +13,7 @@ const int soundPin = 35;
 int cnt = 0;
 float get_noise_voltage() {
     if (SIMULATION) {
-        return cnt = (cnt + 1) % 30 + (cnt + 1) % 5;
+        return (cnt++) % 15;
     }
 
     float minim = analogRead(soundPin);
@@ -34,9 +34,11 @@ NoiseMeasurement message = {"", 0};
 void setup() {
     Serial.begin(115200);
 
-    setupBLE();
-    pinMode(soundPin, INPUT);
+    if (!SIMULATION) {
+        setupBLE();
+    }
 
+    pinMode(soundPin, INPUT);
     strcpy(message.device_name, Config::ESP_UNIQUE_ID);
 }
 

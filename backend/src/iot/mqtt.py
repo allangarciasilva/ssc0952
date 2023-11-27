@@ -1,5 +1,4 @@
 import asyncio
-from collections import defaultdict
 from typing import Callable
 
 from paho.mqtt import client as mqtt
@@ -86,6 +85,7 @@ class MQTTHandler:
         self.db.add(db_noise)
         self.db.commit()
 
+        self.logger.debug(f"{message.device_name} -> {message.noise_value}.")
         await message_manager.publish(
             f"noise/{message.device_name}", message.noise_value
         )

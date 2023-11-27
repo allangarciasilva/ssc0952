@@ -17,6 +17,7 @@ services:
     depends_on:
       - database
     command: poetry run python -m src.main
+    restart: always
   database:
     image: postgres
     ports:
@@ -25,6 +26,7 @@ services:
       - .env
     volumes:
       - ./postgres:/var/lib/postgresql/data
+    restart: always
   broker:
     image: eclipse-mosquitto
     env_file:
@@ -36,3 +38,4 @@ services:
       - ./mosquitto/config:/mosquitto/config
       - ./mosquitto/certs:/mosquitto/certs
       - ./mosquitto/data:/mosquitto/data
+    restart: always

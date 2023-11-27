@@ -16,7 +16,7 @@ docker compose run --rm -it flutter bash
 ```
 
 > **Atenção:** o processo de *build* da imagem pode ser demorado e requisitar uma quantidade considerável de memória.
-
+ 
 ## Instalação
 
 No terminal aberto, você pode verificar se a ESP está corretamente detectada utilizando o comando:
@@ -42,6 +42,7 @@ Outra forma de instalar o aplicativo no celular é utilizando o APK que foi comp
 O APK compilado encontra-se no caminho `/home/developer/app/release.apk` e pode ser obtido por meio de:
 
 ```shell
+# No terminal do host
 docker compose up -d flutter
 docker compose cp flutter:/home/developer/app/release.apk ./release.apk
 docker compose down flutter

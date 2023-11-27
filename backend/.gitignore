@@ -1,8 +1,8 @@
 proto/
 __pycache__/
 mosquitto/
-mosquitto/
 postgres/
 .idea/
 .vscode/
 data/
+log/

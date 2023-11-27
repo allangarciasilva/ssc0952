@@ -8,7 +8,16 @@
 
 ConfigManager ConfigManager::instance;
 
-ConfigManager::ConfigManager() {}
+ConfigManager::ConfigManager() {
+    if (SIMULATION) {
+        first_set = true;
+        up_to_date = false;
+
+        data.roomId = 1;
+        strcpy(data.wifiSsid, "Wokwi-GUEST");
+        strcpy(data.wifiPassword, "");
+    }
+}
 
 void ConfigManager::setData(uint8_t *buffer, size_t bufferSize) {
     pb_istream_t stream = pb_istream_from_buffer(buffer, bufferSize);

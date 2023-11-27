@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from src.shared.schemas import BaseModel
 
 
@@ -16,3 +18,8 @@ class Device(BaseModel):
     room_id: int
     name: str
     active: bool
+
+
+class MeasurementFilter(BaseModel):
+    dt_min: datetime
+    dt_max: datetime

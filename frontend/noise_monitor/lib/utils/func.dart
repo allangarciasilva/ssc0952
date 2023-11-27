@@ -23,7 +23,7 @@ FutureOr<void> executeOrShowError(
     if (error is ApiError) {
       message = error.toString();
     } else {
-      debugPrint(error.toString());
+      print(error.toString());
       message = "Unknown error.";
     }
     showSnackbar(context, message);

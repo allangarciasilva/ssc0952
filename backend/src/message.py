@@ -3,8 +3,7 @@ from typing import Any, Optional
 
 from starlette.websockets import WebSocket
 
-from proto.NoiseMeasurement_pb2 import NoiseMeasurement
-from src.database import SessionLocal, models
+from src.database import SessionLocal
 from src.iot import crud
 from src.shared.func import create_file_logger
 
