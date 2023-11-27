@@ -33,6 +33,7 @@ Depois, deve-se adicionar o usuário que foi configurado anteriormente. Há um s
 
 ```shell
 sh ./scripts/mosquitto_add_user.sh
+docker compose restart broker
 ```
 
 ## Execução do Python
