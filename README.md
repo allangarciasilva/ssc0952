@@ -1,6 +1,4 @@
-# Projeto Final - Internet das Coisas (SSC-0952)
-
-## Descrição
+# Projeto Final - Streaming de Dados, Containers e Microsserviços (SSC-0965)
 
 ## Tecnologias
 
@@ -26,34 +24,17 @@ Para otimizar a consistência e praticidade do ambiente de desenvolvimento e imp
 
 A partir de agora, vamos considerar que esse repositório foi clonado em ao menos duas máquinas: um servidor Linux no qual serão executados o Python, o Postgres e o Mosquitto; e uma máquina local, também com Linux, com acesso via USB à ESP32 e a um smartphone Android.
 
-Você deve criar um arquivo de configurações chamado de `config.env` no diretório raiz. Ele deve conter seguir o seguinte modelo:
+Você deve editar o arquivo de configurações chamado de `config.env` no diretório raiz. Abaixo segue a explicação de cada campo:
 
-```shell
-API_SECRET_KEY=""
-API_HOST=""
-API_PORT=8045
-
-POSTGRES_USER=""
-POSTGRES_PASSWORD=""
-POSTGRES_DB="main"
-
-MOSQUITTO_USER=""
-MOSQUITTO_PASSWORD=""
-MOSQUITTO_HOST="broker"
-MOSQUITTO_PORT=1883
-```
-
-Abaixo segue a explicação de cada campo:
-
-- `API_SECRET_KEY`: Chave secreta para assinar a autenticação dos usuários. Pode ser gerada com o comando: `openssl rand -hex 32`.
-- `API_HOST`: IP ou URL do servidor em que será exposta a aplicação em Python.
 - `HTTP_PORT`: Porta na qual será exposto o microsserviço H.
 - `WS_PORT`: Porta na qual será exposto o microsserviço W.
-- `POSTGRES_PASSWORD`: Senha do usuário do banco de dados.
+- `MOSQUITTO_PORT`: Porta na qual será exposto exposto o broker MQTT.
+- `API_HOST`: IP ou URL do servidor em que será exposta a aplicação em Python, usado para a configuração do Flutter.
+- `MOSQUITTO_HOST`: IP do servidor em que será exposto o broker MQTT. Não pode ser URL por razões de compatibilidade com a ESP.
 - `MOSQUITTO_USER`: Nome de usuário para acesso ao ao broker MQTT.
 - `MOSQUITTO_PASSWORD`: Senha do usuário do broker MQTT.
-- `MOSQUITTO_HOST`: IP do servidor em que será exposto o broker MQTT. Não pode ser URL por razões de compatibilidade com a ESP.
-- `MOSQUITTO_PORT`: Porta na qual será exposto exposto o broker MQTT.
+- `API_SECRET_KEY`: Chave secreta para assinar a autenticação dos usuários. Pode ser gerada com o comando: `openssl rand -hex 32`.
+- `POSTGRES_PASSWORD`: Senha do usuário do banco de dados.
 
 O arquivo `config.env` contém um exemplo funcional e considera que o servidor Linux possui IP `143.107.232.252` e o firewall está configurado para abrir as portas `7045` e `8045`.
 
@@ -66,8 +47,9 @@ O restante pode manter conforme preenchido.
 Certifique-se que esse arquivo de configuração está igual em ambas as máquinas, no servidor e na máquina em que serão configurados a ESP e o smartphone.
 
 O restante das informações está dividido entre os arquivos:
-1. Para o backend e o broker: `./backend/README.md`
-2. Para o programa da ESP: `./embedded/README.md`
+1. Para o Mosquitto: `./mosquitto/README.md`
+2. Para os microsserviços e o Kafka: `./microservice/README.md`
+2. Para o firmware da ESP: `./embedded/README.md`
 3. Para o cliente Android: `./frontend/noise_monitor/README.md`
 
-Os caminhos de arquivos referenciados por esses READMEs assumem que estão relativos à pasta do README em questão.
+Os caminhos de arquivos referenciados por esses READMEs assumem que estão relativos à pasta do README em questão. Eles devem ser lidos na ordem acima.
