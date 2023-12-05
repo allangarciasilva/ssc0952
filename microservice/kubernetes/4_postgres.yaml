@@ -21,7 +21,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/k3s/directory/structure/"
+    path: "/mnt/k3s/iot/postgres/"
     type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
