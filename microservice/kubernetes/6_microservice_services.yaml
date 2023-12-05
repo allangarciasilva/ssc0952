@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-message-streamer-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-message-streamer
+  template:
+    metadata:
+      labels:
+        app: web-message-streamer
+    spec:
+      containers:
+        - name: web-message-streamer
+          image: allangarcia2004/ssc0965:latest
+          command:
+            ["poetry", "run", "python", "-m", "src.web_message_streamer.main"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: internal-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-message-streamer
+spec:
+  selector:
+    app: web-message-streamer
+  ports:
+    - port: 8081
+      targetPort: 8081
+      nodePort: 7011
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: room-manager-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: room-manager
+  template:
+    metadata:
+      labels:
+        app: room-manager
+    spec:
+      containers:
+        - name: room-manager
+          image: allangarcia2004/ssc0965:latest
+          command: ["poetry", "run", "python", "-m", "src.room_manager.main"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: internal-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: room-manager
+spec:
+  selector:
+    app: room-manager
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 7111
+  type: LoadBalancer
+
+

@@ -36,8 +36,6 @@ API_PORT=8045
 POSTGRES_USER=""
 POSTGRES_PASSWORD=""
 POSTGRES_DB="main"
-POSTGRES_HOST="database"
-POSTGRES_PORT=5432
 
 MOSQUITTO_USER=""
 MOSQUITTO_PASSWORD=""
@@ -49,12 +47,9 @@ Abaixo segue a explicação de cada campo:
 
 - `API_SECRET_KEY`: Chave secreta para assinar a autenticação dos usuários. Pode ser gerada com o comando: `openssl rand -hex 32`.
 - `API_HOST`: IP ou URL do servidor em que será exposta a aplicação em Python.
-- `API_PORT`: Porta na qual será exposta a aplicação em Python.
-- `POSTGRES_USER`: Nome de usuário para acesso ao banco de dados.
+- `HTTP_PORT`: Porta na qual será exposto o microsserviço H.
+- `WS_PORT`: Porta na qual será exposto o microsserviço W.
 - `POSTGRES_PASSWORD`: Senha do usuário do banco de dados.
-- `POSTGRES_DB`: Nome do banco de dados utilizado pela aplicação.
-- `POSTGRES_HOST`: Porta na qual será exposto exposto o banco de dados. Caso deseje utilizar sob o mesmo Docker Compose do Python, mantenha o valor `database`.
-- `POSTGRES_PORT`: IP ou URL do servidor em que será exposto o banco de dados. Caso deseje utilizar sob o mesmo Docker Compose do Python, mantenha o valor `5432`.
 - `MOSQUITTO_USER`: Nome de usuário para acesso ao ao broker MQTT.
 - `MOSQUITTO_PASSWORD`: Senha do usuário do broker MQTT.
 - `MOSQUITTO_HOST`: IP do servidor em que será exposto o broker MQTT. Não pode ser URL por razões de compatibilidade com a ESP.

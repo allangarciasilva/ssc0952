@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  broker:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - ${MOSQUITTO_PORT}:1883
+    volumes:
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/certs:/mosquitto/certs
+      - ./mosquitto/password:/mosquitto/password
+      - ./openssl.cnf:/mosquitto/openssl.cnf
+      - ./static/mosquitto.conf/:/mosquitto/config/mosquitto.conf

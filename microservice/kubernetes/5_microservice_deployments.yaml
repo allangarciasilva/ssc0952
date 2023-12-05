@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-kafka-bridge-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqtt-kafka-bridge
+  template:
+    metadata:
+      labels:
+        app: mqtt-kafka-bridge
+    spec:
+      containers:
+        - name: mqtt-kafka-bridge
+          image: allangarcia2004/ssc0965:latest
+          command:
+            ["poetry", "run", "python", "-m", "src.mqtt_kafka_bridge.main"]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: internal-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-persistence-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-persistence
+  template:
+    metadata:
+      labels:
+        app: notification-persistence
+    spec:
+      containers:
+        - name: notification-persistence
+          image: allangarcia2004/ssc0965:latest
+          command:
+            [
+              "poetry",
+              "run",
+              "python",
+              "-m",
+              "src.db_event_persistence.notification.main",
+            ]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: internal-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: measurement-persistence-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: measurement-persistence
+  template:
+    metadata:
+      labels:
+        app: measurement-persistence
+    spec:
+      containers:
+        - name: measurement-persistence
+          image: allangarcia2004/ssc0965:latest
+          command:
+            [
+              "poetry",
+              "run",
+              "python",
+              "-m",
+              "src.db_event_persistence.measurement.main",
+            ]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: internal-config

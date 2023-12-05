@@ -1,3 +1,6 @@
 .vscode/
 .tmp/
 .env
+.idea/
+.vscode/
+.venv/
