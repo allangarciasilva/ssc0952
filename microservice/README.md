@@ -14,6 +14,33 @@ cp ../proto proto -r
 cp ../config.env .env
 ```
 
+## Publicação da imagem Docker
+
+A fim de simplificar o deploy, todos os microsserviços construídos usam a mesma imagem Docker, modificando apenas o seu comando de execução. Essa está definida no arquivo `Dockerfile` neste repositório e, para utilizá-la no Kubernetes, devemos publicá-la no Dockerhub.
+
+Inicialmente, é necessário criar uma conta no Dockerhub e se autenticar na máquina na local. O processo de autenticação pode ser realizado por meio do comando abaixo, substituindo-se devidamente as credenciais:
+
+```shell
+docker login -u=<usuario> -p=<senha>
+``` 
+
+> **Atenção:** Um modo mais seguro de autenticação envolve o uso de um Access Token. Para mais detalhes, consulte a documentação oficial: <https://docs.docker.com/security/for-developers/access-tokens/>.
+
+Agora, podemos construir e publicar a imagem (você pode alterar `$DOCKER_USER` e `$IMAGE_NAME` conforme a necessidade).
+
+```shell
+docker build -t $DOCKER_USER/$IMAGE_NAME . && \
+docker push $DOCKER_USER/$IMAGE_NAME
+```
+
+Para o presente trabalho, o perfil utilizado (`$DOCKER_USER`) foi o `allangarcia2004`, com a imagem (`$IMAGE_NAME`) `ssc0965`. Portanto, caso deseje baixar localmente a imagem utilizada para desenvolvimento, faça:
+
+```shell
+docker pull allangarcia2004/ssc0965:latest
+```
+
+Não esqueça essa identificação `$DOCKER_USER/$IMAGE_NAME`, pois ela será usada depois na configuração do Kubernetes.
+
 ## Instalação do K3s
 
 Vamos instalar uma distribuição simplificada do Kubernetes, chamada de K3s. Assumimos aqui uma configuração em que haverá um único node (uma única máquina), que conterá todos os pods relativos aos microsserviços. Também assumiremos que, no firewall dessa máquina, foram liberadas as portas `$HTTP_PORT` e `$WS_PORT`, conforme definido no `config.env`.
@@ -50,14 +77,17 @@ sudo k3s kubectl config view --raw > "$KUBECONFIG"
 chmod 600 "$KUBECONFIG"
 ```
 
-## Implantação do Postgres e do Kafka
+## Criação dos Arquivos de Manifesto
 
-Infelizmente, diferentemente do Docker Compose, o Kubernetes não permite, de forma fácil, o uso de variáveis de ambientes para modificar os próprios arquivos de manifesto (`*.yaml`). Como desejamos customizar algumas coisas, como as portas, os IPs, a própria imagem de Docker etc, faremos um workaround: na pasta `kubernetes/templates/`, encontram-se os manifestos "puros", com as variáveis de ambientes não configuradas (por exemplo, há linhas como: `image: $MICROSERVICE_IMAGE`). Utilizando a ferramenta `envsubst` (nativa do Linux), iremos fazer a substituição dos nomes das variáveis pelos seus valores conforme definido no `config.env`.
+Infelizmente, diferentemente do Docker Compose, o Kubernetes não permite, de forma fácil, o uso de variáveis de ambientes para modificar os próprios arquivos de manifesto (`*.yaml`). Como desejamos customizar algumas coisas, como as portas, os IPs, a própria imagem de Docker etc, faremos um workaround: na pasta `kubernetes/templates/`, encontram-se os manifestos "puros", com as variáveis de ambientes não configuradas (por exemplo, há linhas como: `nodePort: $HTTP_PORT`). 
 
-Para isso, execute o script:
+Utilizando a ferramenta `envsubst` (nativa do Linux), iremos fazer a substituição dos nomes das variáveis pelos seus valores conforme definido no `config.env`. Para isso, há um script que irá carregar as variáveis de configuração e, para cada arquivo manifesto, executar a substituição e salvar em uma pasta separada. 
+
+Uma variável usada que não está no `config.env` é a `$MICROSERVICE_IMAGE`, que define o nome da imagem, no Dockerhub, a ser utilizada nos microsserviços. Ela deve ter o nome que foi utilizado para fazer a publicação início deste texto. Abaixo, segue exemplo da execução do script utilizando a imagem de desenvolvimento:
 
 ```shell
-sh ./scripts/replace_kubernetes_variables.sh
+# Altere conforme necessidade
+MICROSERVICE_IMAGE="allangarcia2004/ssc0965:latest" sh ./scripts/replace_kubernetes_variables.sh
 ```
 
 Agora, os arquivos de configuração prontos se encontram na pasta `kubernetes/replaced`. Portanto, devemos entrar na pasta:
@@ -68,9 +98,13 @@ cd ./kubernetes/replaced
 
 > **Atenção:** Caso alguma variável seja alterada, deve-se executar novamente o `replace_kubernetes_variables.sh`.
 
-Feito isso, podemos aplicar os arquivos:
+## Implantação do Postgres e do Kafka
+
+Criados os arquivos finais de manifesto, podemos aplicá-los:
 
 ```shell
+# Deve-se estar na pasta kubernetes/replaced
+
 # Cria um namespace para a aplicação
 kubectl create namespace iot
 
