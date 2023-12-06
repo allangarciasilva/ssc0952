@@ -1,7 +1,5 @@
 # Projeto Final - Internet das Coisas (SSC-0952)
 
-## Descrição
-
 ## Tecnologias
 
 São incorporadas diversas tecnologias, incluindo:

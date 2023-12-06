@@ -1,6 +1,12 @@
 # Embarcado
 
-Inicialmente, copie para o contexto atual os arquivos necessários:
+Lembre-se de abrir a pasta atual:
+
+```shell
+cd ./embedded # A partir da raiz do repositório
+```
+
+Copie para o contexto atual os arquivos necessários:
 
 ```shell
 rm -rf .env proto

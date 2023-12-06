@@ -1,6 +1,12 @@
 # Backend e Broker MQTT
 
-Inicialmente, copie para o contexto atual os arquivos necessários:
+Lembre-se de abrir a pasta atual:
+
+```shell
+cd ./backend # A partir da raiz do repositório
+```
+
+Copie para o contexto atual os arquivos necessários:
 
 ```shell
 rm -rf .env proto
@@ -22,7 +28,7 @@ sh ./scripts/mosquitto_setup_certificates.sh
 
 ## Execução do Broker
 
-Para executar o broker MQTT, é suficiente baixar a sua imagem do Docker Hub e depois executá-lo 
+Para executar o broker MQTT, é suficiente baixar a sua imagem do Docker Hub e depois executá-lo:
 
 ```shell
 docker compose pull broker
@@ -32,8 +38,8 @@ docker compose up broker -d
 Depois, deve-se adicionar o usuário que foi configurado anteriormente. Há um script pronto para tal:
 
 ```shell
-sh ./scripts/mosquitto_add_user.sh
-docker compose restart broker
+sh ./scripts/mosquitto_add_user.sh # Configura o usuário
+docker compose restart broker # Reinicia o broker para aplicar a mudança
 ```
 
 ## Execução do Python
