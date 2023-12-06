@@ -18,7 +18,7 @@ async def filter_by_key(key: str | bytes, consumer: AIOKafkaConsumer):
             yield message
 
 
-@app.websocket("/ws/notification/")
+@app.websocket("/ws/user/")
 async def websocket_endpoint(websocket: WebSocket, user: LoggedUserWs):
     consumer = AIOKafkaConsumer('notification', bootstrap_servers=SETTINGS.kafka_server)
     await consumer.start()
