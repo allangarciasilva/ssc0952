@@ -44,13 +44,13 @@ Uri _renderHttpUri(String route, {Map<String, String>? query}) {
   if (API_HOST.contains("ngrok.io")) {
     return Uri.https(API_HOST, route, query);
   }
-  return Uri.http("$API_HOST:$API_PORT", route, query);
+  return Uri.http("$API_HOST:$HTTP_PORT", route, query);
 }
 
 Uri _renderWsUrl(String route, {Map<String, String>? query}) {
   int? port = null;
   if (!API_HOST.contains("ngrok.io")) {
-    port = API_PORT;
+    port = WS_PORT;
   }
 
   return Uri(

@@ -12,7 +12,7 @@ São incorporadas diversas tecnologias, incluindo:
 
 - **Mosquitto**, como broker MQTT e responsável pela comunicação entre as ESPs e o Python.
 
-Apesar de estar tudo no mesmo repositório, é importante notar que as partes são altamente modulares. O Python, o Postgres e o Mosquitto podem, por exemplo, ser executados em máquinas distintas, bastando configurar os devidos endereços e portas.
+Apesar de estar tudo no mesmo repositório, é importante notar que as partes são altamente modulares.
 
 Ressalta-se que, para a implantação completa, nem tudo podem ser executado no servidor Linux, uma vez que a programação da ESP requer a conexão direta com o dispositivo via USB para o envio do firmware. Esse requisito implica que determinadas etapas do desenvolvimento e atualização do firmware devem ser realizadas em um computador local.
 
@@ -22,7 +22,9 @@ Para otimizar a consistência e praticidade do ambiente de desenvolvimento e imp
 
 ## Configuração
 
-A partir de agora, vamos considerar que esse repositório foi clonado em ao menos duas máquinas: um servidor Linux no qual serão executados o Python, o Postgres e o Mosquitto; e uma máquina local, também com Linux, com acesso via USB à ESP32 e a um smartphone Android.
+A partir de agora, vamos considerar que esse repositório foi clonado em ao menos duas máquinas: um servidor Linux no qual serão executados o Kubernetes e o Mosquitto; e uma máquina local, também com Linux, com acesso via USB à ESP32 e a um smartphone Android.
+
+Opcionalmente, o Mosquitto pode estar em uma máquina separada do Kubernetes, pois ele será executado via Docker Compose.
 
 Você deve editar o arquivo de configurações chamado de `config.env` no diretório raiz. Abaixo segue a explicação de cada campo:
 
@@ -36,15 +38,15 @@ Você deve editar o arquivo de configurações chamado de `config.env` no diret�
 - `API_SECRET_KEY`: Chave secreta para assinar a autenticação dos usuários. Pode ser gerada com o comando: `openssl rand -hex 32`.
 - `POSTGRES_PASSWORD`: Senha do usuário do banco de dados.
 
-O arquivo `config.env` contém um exemplo funcional e considera que o servidor Linux possui IP `143.107.232.252` e o firewall está configurado para abrir as portas `7045` e `8045`.
+O arquivo `config.env` contém um exemplo funcional e considera que o servidor Linux possui IP `143.107.232.252` e o firewall está configurado para abrir as portas `7011`, `7111` e `7045`.
 
-Obrigatoriamente, é necessário conferir o IP do servidor Linux (que será comum ao Broker e ao Python) e as portas a serem expostas.
+Obrigatoriamente, é necessário conferir o IP da API e do Mosquitto e as portas a serem expostas.
 
 No caso de uma aplicação real, por segurança, é altamente recomendado trocar as senhas e a chave secreta, porém a aplicação funcionará corretamente com os valores providos. Aqui todas foram geradas com o comando `openssl rand -hex 32`.
 
 O restante pode manter conforme preenchido.
 
-Certifique-se que esse arquivo de configuração está igual em ambas as máquinas, no servidor e na máquina em que serão configurados a ESP e o smartphone.
+Certifique-se que esse arquivo de configuração está igual em todas as máquinas, no servidor e na máquina em que serão configurados a ESP e o smartphone.
 
 O restante das informações está dividido entre os arquivos:
 1. Para o Mosquitto: `./mosquitto/README.md`
@@ -52,4 +54,6 @@ O restante das informações está dividido entre os arquivos:
 2. Para o firmware da ESP: `./embedded/README.md`
 3. Para o cliente Android: `./frontend/noise_monitor/README.md`
 
-Os caminhos de arquivos referenciados por esses READMEs assumem que estão relativos à pasta do README em questão. Eles devem ser lidos na ordem acima.
+Os caminhos de arquivos referenciados por esses READMEs assumem que estão relativos à pasta do README em questão.
+
+> **Atenção:** é necessário que se faça na ordem: a ESP e os Microsserviços dependem do Mosquitto estar online para funcionarem (e compilarem) corretamente.
