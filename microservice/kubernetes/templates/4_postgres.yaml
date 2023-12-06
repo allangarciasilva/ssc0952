@@ -50,8 +50,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: app-config
-            - configMapRef:
-                name: internal-config
       volumes:
         - name: postgresdb
           persistentVolumeClaim:

@@ -14,14 +14,12 @@ spec:
     spec:
       containers:
         - name: mqtt-kafka-bridge
-          image: allangarcia2004/ssc0965:latest
+          image: $MICROSERVICE_IMAGE
           command:
             ["poetry", "run", "python", "-m", "src.mqtt_kafka_bridge.main"]
           envFrom:
             - configMapRef:
                 name: app-config
-            - configMapRef:
-                name: internal-config
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -39,7 +37,7 @@ spec:
     spec:
       containers:
         - name: notification-persistence
-          image: allangarcia2004/ssc0965:latest
+          image: $MICROSERVICE_IMAGE
           command:
             [
               "poetry",
@@ -51,8 +49,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: app-config
-            - configMapRef:
-                name: internal-config
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -70,7 +66,7 @@ spec:
     spec:
       containers:
         - name: measurement-persistence
-          image: allangarcia2004/ssc0965:latest
+          image: $MICROSERVICE_IMAGE
           command:
             [
               "poetry",
@@ -82,5 +78,3 @@ spec:
           envFrom:
             - configMapRef:
                 name: app-config
-            - configMapRef:
-                name: internal-config

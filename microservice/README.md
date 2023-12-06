@@ -1,6 +1,12 @@
 # Microsserviços
 
-Inicialmente, copie para o contexto atual os arquivos necessários:
+Lembre-se de abrir a pasta atual:
+
+```shell
+cd ./microservice # A partir da raiz do repositório
+```
+
+Copie para o contexto atual os arquivos necessários:
 
 ```shell
 rm -rf .env proto
@@ -59,9 +65,11 @@ Feito isso, podemos aplicar todos os arquivos:
 kubectl create namespace iot
 
 # Criando um ConfigMap baseado nas configurações da aplicação
+kubectl delete -n iot configmap app-config && true
 kubectl create -n iot configmap app-config --from-env-file=../.env
 
 # Criando um ConfigMap com dados extras que podem ser mantidos por padrão
+kubectl delete -n iot configmap internal-config && true
 kubectl create -n iot configmap internal-config --from-env-file=./0_internal_config.env
 
 # Instalando o Kafka (e criando seus tópicos) e o Postgres
@@ -76,6 +84,10 @@ Antes de continuar, use o comando abaixo e certifique-se que há ao menos um pod
 ```shell
 kubectl get -n iot pods --watch
 ```
+
+Abaixo segue um exemplo dos containers em estado READY:
+
+![](./image/example-wait.png)
 
 ## Implantação dos Microsserviços
 
