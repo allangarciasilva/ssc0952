@@ -52,25 +52,30 @@ chmod 600 "$KUBECONFIG"
 
 ## Implantação do Postgres e do Kafka
 
-Os arquivos de configuração se encontram na pasta `kubernetes`. Portanto, devemos entrar na pasta:
+Infelizmente, diferentemente do Docker Compose, o Kubernetes não permite, de forma fácil, o uso de variáveis de ambientes para modificar os próprios arquivos de manifesto (`*.yaml`). Como desejamos customizar algumas coisas, como as portas, os IPs, a própria imagem de Docker etc, faremos um workaround: na pasta `kubernetes/templates/`, encontram-se os manifestos "puros", com as variáveis de ambientes não configuradas (por exemplo, há linhas como: `image: $MICROSERVICE_IMAGE`). Utilizando a ferramenta `envsubst` (nativa do Linux), iremos fazer a substituição dos nomes das variáveis pelos seus valores conforme definido no `config.env`.
+
+Para isso, execute o script:
 
 ```shell
-cd ./kubernetes
+sh ./scripts/replace_kubernetes_variables.sh
 ```
 
-Feito isso, podemos aplicar todos os arquivos:
+Agora, os arquivos de configuração prontos se encontram na pasta `kubernetes/replaced`. Portanto, devemos entrar na pasta:
+
+```shell
+cd ./kubernetes/replaced
+```
+
+> **Atenção:** Caso alguma variável seja alterada, deve-se executar novamente o `replace_kubernetes_variables.sh`.
+
+Feito isso, podemos aplicar os arquivos:
 
 ```shell
 # Cria um namespace para a aplicação
 kubectl create namespace iot
 
 # Criando um ConfigMap baseado nas configurações da aplicação
-kubectl delete -n iot configmap app-config && true
-kubectl create -n iot configmap app-config --from-env-file=../.env
-
-# Criando um ConfigMap com dados extras que podem ser mantidos por padrão
-kubectl delete -n iot configmap internal-config && true
-kubectl create -n iot configmap internal-config --from-env-file=./0_internal_config.env
+kubectl apply -n iot -f ./0_app_config.yaml
 
 # Instalando o Kafka (e criando seus tópicos) e o Postgres
 kubectl apply -n iot -f ./1_strimzi_install.yaml \

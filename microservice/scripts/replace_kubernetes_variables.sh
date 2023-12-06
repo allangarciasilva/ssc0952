@@ -5,7 +5,7 @@ ROOT_DIR=$(realpath "$SCRIPTS_DIR/..")
 KUBERNETES_DIR="$ROOT_DIR/kubernetes"
 
 set -o allexport
-source "$ROOT_DIR/../config.env"
+. "$ROOT_DIR/../config.env"
 set +o allexport
 
 mkdir -p "$KUBERNETES_DIR/replaced/"
